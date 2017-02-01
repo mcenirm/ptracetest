@@ -22,18 +22,20 @@ set -u
 parent=\$( cd "\$( dirname "\$0" )" && /bin/pwd )
 child=\$( /bin/pwd )
 child=\${child#\${parent}}
-workdir=/home/blank/work\${child}
+volume=/home/blank/work
+workdir=\${volume}\${child}
 cmd=(
     docker
     run
     --rm
     -it
     --security-opt seccomp:unconfined
-    -v "\${parent}:\${workdir}"
+    -v "\${parent}:\${volume}"
     -w "\${workdir}"
     ${strace}
 )
 
+set -x
 "\${cmd[@]}" "\$@"
 EOF
 chmod +x wrapper-strace.sh
