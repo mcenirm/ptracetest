@@ -15,14 +15,12 @@ function build_docker_image () {
   ( cd "${build_dir}" && docker build -t "${image_name}" . )
 }
 
+function build_wrapper_script () {
+  local script_name=$1
+  local image_name=$2
+  local wrapper=wrapper-${script_name}.sh
 
-build_docker_image docker-compiler "${compiler}"
-
-docker run --rm -it -v "${PWD}:/home/blank/src" "${compiler}" make CFLAGS=-pthread pthread1
-
-build_docker_image docker-strace "${strace}"
-
-cat > wrapper-strace.sh <<EOF
+  cat > "${wrapper}" <<EOF
 #!/bin/bash
 
 set -e
@@ -41,10 +39,20 @@ cmd=(
     --security-opt seccomp:unconfined
     -v "\${parent}:\${volume}"
     -w "\${workdir}"
-    ${strace}
+    "${image_name}"
 )
 
 set -x
 "\${cmd[@]}" "\$@"
 EOF
-chmod +x wrapper-strace.sh
+
+  chmod +x "${wrapper}"
+}
+
+
+build_docker_image docker-compiler "${compiler}"
+
+docker run --rm -it -v "${PWD}:/home/blank/src" "${compiler}" make CFLAGS=-pthread pthread1
+
+build_docker_image docker-strace "${strace}"
+build_wrapper_script strace "${strace}"
