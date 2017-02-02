@@ -7,11 +7,20 @@ repo_prefix=$( docker info | sed -n -e 's/^Username: \(.*\)$/\1\//p' | head -1 )
 compiler=${repo_prefix}-compiler:latest
 strace=${repo_prefix}-strace:latest
 
-( cd docker-compiler && docker build -t "${compiler}" . )
+
+function build_docker_image () {
+  local build_dir=$1
+  local image_name=$2
+
+  ( cd "${build_dir}" && docker build -t "${image_name}" . )
+}
+
+
+build_docker_image docker-compiler "${compiler}"
 
 docker run --rm -it -v "${PWD}:/home/blank/src" "${compiler}" make CFLAGS=-pthread pthread1
 
-( cd docker-strace && docker build -t "${strace}" . )
+build_docker_image docker-strace "${strace}"
 
 cat > wrapper-strace.sh <<EOF
 #!/bin/bash
