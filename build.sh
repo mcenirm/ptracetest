@@ -6,6 +6,7 @@ set -u
 repo_prefix=$( docker info | sed -n -e 's/^Username: \(.*\)$/\1\//p' | head -1 )ptracetest
 compiler=${repo_prefix}-compiler:latest
 strace=${repo_prefix}-strace:latest
+python_ptrace=${repo_prefix}-python-ptrace:latest
 
 
 function build_docker_image () {
@@ -56,3 +57,6 @@ docker run --rm -it -v "${PWD}:/home/blank/src" "${compiler}" make CFLAGS=-pthre
 
 build_docker_image docker-strace "${strace}"
 build_wrapper_script strace "${strace}"
+
+build_docker_image docker-python-ptrace "${python_ptrace}"
+build_wrapper_script python-ptrace "${python_ptrace}"
