@@ -3,6 +3,10 @@
 set -e
 set -u
 
+
+nonroot=alpine-nonroot:3.5-onbuild
+nonroot_workdir=/home/nonroot/work
+
 repo_prefix=$( docker info | sed -n -e 's/^Username: \(.*\)$/\1\//p' | head -1 )ptracetest
 compiler=${repo_prefix}-compiler:latest
 strace=${repo_prefix}-strace:latest
@@ -50,6 +54,8 @@ EOF
   chmod +x "${wrapper}"
 }
 
+
+build_docker_image docker-alpine-nonroot "${nonroot}"
 
 build_docker_image docker-compiler "${compiler}"
 
