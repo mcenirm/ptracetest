@@ -1,10 +1,6 @@
-FROM alpine:3.5
+FROM alpine-nonroot:3.5-onbuild
 
+USER root
 RUN apk add --update strace
 
-RUN adduser -D blank
-
-VOLUME /home/blank/work
-
-USER blank
-WORKDIR /home/blank/work
+USER nonroot

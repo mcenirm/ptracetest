@@ -34,7 +34,7 @@ set -u
 parent=\$( cd "\$( dirname "\$0" )" && /bin/pwd )
 child=\$( /bin/pwd )
 child=\${child#\${parent}}
-volume=/home/blank/work
+volume=${nonroot_workdir}
 workdir=\${volume}\${child}
 cmd=(
     docker
@@ -59,7 +59,7 @@ build_docker_image docker-alpine-nonroot "${nonroot}"
 
 build_docker_image docker-compiler "${compiler}"
 
-docker run --rm -it -v "${PWD}:/home/blank/src" "${compiler}" make CFLAGS=-pthread pthread1
+docker run --rm -it -v "${PWD}:${nonroot_workdir}" "${compiler}" make CFLAGS=-pthread pthread1
 
 build_docker_image docker-strace "${strace}"
 build_wrapper_script strace "${strace}"
