@@ -54,12 +54,16 @@ EOF
   chmod +x "${wrapper}"
 }
 
+function compile () {
+    docker run --rm -it -v "${PWD}:${nonroot_workdir}" "${compiler}" "$@"
+}
+
 
 build_docker_image docker-alpine-nonroot "${nonroot}"
 
 build_docker_image docker-compiler "${compiler}"
 
-docker run --rm -it -v "${PWD}:${nonroot_workdir}" "${compiler}" make CFLAGS=-pthread pthread1
+compile make CFLAGS=-pthread pthread1
 
 build_docker_image docker-strace "${strace}"
 build_wrapper_script strace "${strace}"
